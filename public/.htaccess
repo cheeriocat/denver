@@ -1,0 +1,33 @@
+# Apache / cPanel SPA rewrite rules
+# Place this file in the web root (public_html or the subfolder containing dist files)
+# together with your dist build output.
+
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /
+
+  # Serve existing files/dirs directly
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+
+  # All other requests → index.html (React Router SPA)
+  RewriteRule ^ index.html [QSA,L]
+</IfModule>
+
+# Security headers
+<IfModule mod_headers.c>
+  Header set X-Content-Type-Options "nosniff"
+  Header set X-Frame-Options "DENY"
+  Header set Referrer-Policy "strict-origin-when-cross-origin"
+</IfModule>
+
+# Cache hashed assets (Vite fingerprints JS/CSS with hashes)
+<IfModule mod_expires.c>
+  ExpiresActive On
+  ExpiresByType text/javascript   "access plus 1 year"
+  ExpiresByType application/javascript "access plus 1 year"
+  ExpiresByType text/css          "access plus 1 year"
+  ExpiresByType image/webp        "access plus 1 month"
+  ExpiresByType image/jpeg        "access plus 1 month"
+  ExpiresByType image/png         "access plus 1 month"
+</IfModule>

@@ -1788,3 +1788,57 @@ h1, h2, h3, h4, h5, h6 {
   .feature-item { border-right: none; border-top: 1px solid var(--border); }
   .feature-item:first-child { border-top: none; }
 }
+
+/* ============================================
+   SKELETON LOADING — product card placeholders
+   ============================================ */
+@keyframes shimmer {
+  0%   { background-position: -600px 0; }
+  100% { background-position: 600px 0; }
+}
+
+.skeleton-img {
+  aspect-ratio: 1 / 1;
+  background: linear-gradient(
+    90deg,
+    var(--black-card) 25%,
+    var(--black-hover) 37%,
+    var(--black-card) 63%
+  );
+  background-size: 600px 100%;
+  animation: shimmer 1.4s ease infinite;
+}
+
+.skeleton-line {
+  height: 12px;
+  border-radius: 2px;
+  background: linear-gradient(
+    90deg,
+    var(--black-card) 25%,
+    var(--black-hover) 37%,
+    var(--black-card) 63%
+  );
+  background-size: 600px 100%;
+  animation: shimmer 1.4s ease infinite;
+}
+
+/* ============================================
+   SHOP EMPTY / ERROR STATE
+   ============================================ */
+.shop-state-msg {
+  text-align: center;
+  padding: 80px 20px;
+  font-family: var(--font-primary);
+  font-size: 14px;
+  color: var(--white-muted);
+  letter-spacing: 0.08em;
+}
+
+/* ============================================
+   OUT-OF-STOCK SIZE BUTTON
+   ============================================ */
+.size-btn.out-of-stock {
+  opacity: 0.35;
+  cursor: not-allowed;
+  text-decoration: line-through;
+}

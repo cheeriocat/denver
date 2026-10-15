@@ -1,0 +1,124 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ── Helper functions ───────────────────────────────────────────────────
+
+    // Check if request comes from an authenticated user
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    // Check if the requester is the owner of a given uid doc
+    function isOwner(uid) {
+      return isSignedIn() && request.auth.uid == uid;
+    }
+
+    // Check if the requester is an admin (doc exists at admins/{uid})
+    function isAdmin() {
+      return isSignedIn() &&
+        exists(/databases/$(database)/documents/admins/$(request.auth.uid));
+    }
+
+    // ── products ───────────────────────────────────────────────────────────
+    // Public read (only active:true enforced by query, not rule — rule allows all reads)
+    // Admin-only write
+    match /products/{productId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // ── productCosts ───────────────────────────────────────────────────────
+    // Admin-only. Never exposed to customers.
+    match /productCosts/{productId} {
+      allow read, write: if isAdmin();
+    }
+
+    // ── admins ─────────────────────────────────────────────────────────────
+    // A user may read ONLY their own admin doc (to check if they are admin).
+    // Write is console-only (admin SDK / Firebase Console).
+    // NOTE: This cannot be enforced to "console only" via rules — we rely on
+    //       the fact that no client-side code writes to this collection.
+    match /admins/{uid} {
+      allow read: if isOwner(uid);
+      allow write: if false; // created manually in Firebase console only
+    }
+
+    // ── orders ─────────────────────────────────────────────────────────────
+    // Create: signed-in user, userId must match auth.uid, status must be "pending",
+    //         paymentStatus must be "unpaid", no courier/tracking fields allowed.
+    // Read:   own orders only, or admin.
+    // Update/Delete: admin only.
+    //
+    // NOTE: We cannot fully enforce the "no courier/tracking fields on create"
+    //       rule on deeply nested maps without listing every field, so we block
+    //       writes that include courierName / trackingNumber / trackingUrl.
+    match /orders/{orderId} {
+      allow create: if isSignedIn()
+        && request.resource.data.userId == request.auth.uid
+        && request.resource.data.status == 'pending'
+        && request.resource.data.paymentStatus == 'unpaid'
+        && !('courierName'    in request.resource.data)
+        && !('trackingNumber' in request.resource.data)
+        && !('trackingUrl'    in request.resource.data);
+
+      allow read: if isAdmin()
+        || (isSignedIn() && resource.data.userId == request.auth.uid);
+
+      allow update, delete: if isAdmin();
+    }
+
+    // ── orderTracking ──────────────────────────────────────────────────────
+    // Public GET only (no list — prevents enumeration of all order numbers).
+    // Admin-only write.
+    // NOTE: Firestore `get` vs `list` distinction is enforced by `allow get`
+    //       (single doc by ID) vs `allow list` (queries). We deliberately do
+    //       NOT allow list, so tracking can only be looked up by exact ID.
+    match /orderTracking/{orderNumber} {
+      allow get: if true;           // public — needed for /track page (no login)
+      allow list: if false;         // never allow listing all tracking docs
+      allow write: if isAdmin();
+    }
+
+    // ── users ──────────────────────────────────────────────────────────────
+    // Each user reads/writes only their own profile doc.
+    match /users/{uid} {
+      allow read, write: if isOwner(uid);
+    }
+
+    // ── settings ───────────────────────────────────────────────────────────
+    // Public read for settings/store (shipping fee, free-shipping threshold,
+    // bank details, WhatsApp number, etc.).
+    // Admin-only write.
+    // NOTE: This rule allows reading ALL fields in settings/store including
+    //       bank details. No secret keys are stored here.
+    match /settings/{docId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // ── counters ───────────────────────────────────────────────────────────
+    // counters/orders: signed-in users may increment via transaction (create order).
+    // Only the increment path in the client uses this; admin can also write.
+    // NOTE: We cannot restrict "increment only" via rules, so we allow any
+    //       write by signed-in users. The order creation code is the only place
+    //       that touches this doc, and it does so inside a transaction.
+    match /counters/{docId} {
+      allow read: if isSignedIn();
+      allow write: if isSignedIn() || isAdmin();
+    }
+
+    // ── stats ──────────────────────────────────────────────────────────────
+    // Admin-only read/write.
+    match /stats/{docId} {
+      allow read, write: if isAdmin();
+    }
+
+    // ── Default deny ───────────────────────────────────────────────────────
+    // Everything not matched above is denied.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

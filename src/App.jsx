@@ -1,5 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { ShoppingBag, X, Search, Menu, ChevronDown, Plus, Minus } from 'lucide-react';
+import { useProducts } from './hooks/useProducts';
+import { categories, testimonials } from './data';
 
 // Inline social icons (lucide-react version doesn't include these)
 const InstagramIcon = () => (
@@ -19,7 +21,6 @@ const FacebookIcon = () => (
     <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
   </svg>
 );
-import { products, categories, testimonials } from './data';
 
 /* ============================================================
    UTILITY: useIntersection observer for scroll animations
@@ -202,6 +203,10 @@ function ProductCard({ product, onAddToCart, onOpenModal, index }) {
   const [ref, visible] = useScrollReveal();
 
   const formatPrice = (p) => `Rs. ${p.toLocaleString('en-LK')}`;
+  // Support both Firestore (images[]) and legacy (image) shape
+  const imageSrc = (product.images && product.images.length > 0)
+    ? product.images[0]
+    : (product.image || '/tshirt_black.jpg');
 
   return (
     <div
@@ -210,7 +215,7 @@ function ProductCard({ product, onAddToCart, onOpenModal, index }) {
       onClick={() => onOpenModal(product)}
     >
       <div className="product-card-image">
-        <img src={product.image} alt={product.name} loading="lazy" />
+        <img src={imageSrc} alt={product.name} loading="lazy" />
         {product.badge && (
           <span className={`product-badge badge-${product.badge.toLowerCase()}`}>
             {product.badge}
@@ -237,7 +242,7 @@ function ProductCard({ product, onAddToCart, onOpenModal, index }) {
             <span className="product-price">{formatPrice(product.price)}</span>
           </div>
           <div className="product-colors">
-            {product.colors.map((c, i) => (
+            {(product.colors || []).map((c, i) => (
               <div key={i} className="color-dot" style={{ background: c }} />
             ))}
           </div>
@@ -248,9 +253,25 @@ function ProductCard({ product, onAddToCart, onOpenModal, index }) {
 }
 
 /* ============================================================
+   PRODUCT SKELETON CARD (loading placeholder)
+   ============================================================ */
+function ProductCardSkeleton({ index }) {
+  return (
+    <div className={`product-card product-card-skeleton fade-up fade-up-delay-${(index % 3) + 1} visible`}>
+      <div className="skeleton-img" />
+      <div className="product-card-info">
+        <div className="skeleton-line" style={{ width: '60%', marginBottom: '8px' }} />
+        <div className="skeleton-line" style={{ width: '40%', marginBottom: '12px' }} />
+        <div className="skeleton-line" style={{ width: '30%' }} />
+      </div>
+    </div>
+  );
+}
+
+/* ============================================================
    SHOP SECTION
    ============================================================ */
-function ShopSection({ onAddToCart, onOpenModal }) {
+function ShopSection({ onAddToCart, onOpenModal, products, loading, error }) {
   const [activeFilter, setActiveFilter] = useState('all');
   const [ref, visible] = useScrollReveal();
 
@@ -283,17 +304,42 @@ function ShopSection({ onAddToCart, onOpenModal }) {
           ))}
         </div>
 
-        <div className="products-grid">
-          {filtered.map((product, i) => (
-            <ProductCard
-              key={product.id}
-              product={product}
-              onAddToCart={onAddToCart}
-              onOpenModal={onOpenModal}
-              index={i}
-            />
-          ))}
-        </div>
+        {/* Loading State */}
+        {loading && (
+          <div className="products-grid">
+            {[...Array(6)].map((_, i) => <ProductCardSkeleton key={i} index={i} />)}
+          </div>
+        )}
+
+        {/* Error State */}
+        {!loading && error && (
+          <div className="shop-state-msg">
+            <p style={{ color: 'var(--gold)' }}>Unable to load products. Please refresh.</p>
+            <p style={{ color: 'var(--white-muted)', fontSize: '12px', marginTop: '8px' }}>{error}</p>
+          </div>
+        )}
+
+        {/* Empty State */}
+        {!loading && !error && filtered.length === 0 && (
+          <div className="shop-state-msg">
+            <p>No products in this category yet.</p>
+          </div>
+        )}
+
+        {/* Products */}
+        {!loading && !error && filtered.length > 0 && (
+          <div className="products-grid">
+            {filtered.map((product, i) => (
+              <ProductCard
+                key={product.id}
+                product={product}
+                onAddToCart={onAddToCart}
+                onOpenModal={onOpenModal}
+                index={i}
+              />
+            ))}
+          </div>
+        )}
       </div>
     </section>
   );
@@ -657,8 +703,18 @@ function CartSidebar({ isOpen, onClose, cartItems, onUpdateQty, onRemove }) {
 function ProductModal({ product, isOpen, onClose, onAddToCart }) {
   const [selectedSize, setSelectedSize] = useState('M');
 
+  // Derive size list from Firestore `stock` object OR legacy `sizes` array
+  const sizeList = product
+    ? (product.stock ? Object.keys(product.stock) : (product.sizes || []))
+    : [];
+
+  // Image: support Firestore `images[]` or legacy `image`
+  const imageSrc = product
+    ? ((product.images && product.images.length > 0) ? product.images[0] : (product.image || '/tshirt_black.jpg'))
+    : '/tshirt_black.jpg';
+
   useEffect(() => {
-    if (product) setSelectedSize(product.sizes?.[2] || product.sizes?.[0]);
+    if (product) setSelectedSize(sizeList[1] || sizeList[0] || 'M');
   }, [product]);
 
   useEffect(() => {
@@ -673,7 +729,7 @@ function ProductModal({ product, isOpen, onClose, onAddToCart }) {
     <div className={`modal-overlay ${isOpen ? 'open' : ''}`} onClick={onClose}>
       <div className="product-modal" onClick={e => e.stopPropagation()}>
         <div className="modal-img">
-          <img src={product.image} alt={product.name} />
+          <img src={imageSrc} alt={product.name} />
         </div>
         <div className="modal-content">
           <button id="modal-close-btn" className="modal-close" onClick={onClose} aria-label="Close modal">
@@ -682,20 +738,24 @@ function ProductModal({ product, isOpen, onClose, onAddToCart }) {
           <div className="modal-eyebrow">Denver Collection</div>
           <h2 className="modal-title">{product.name}</h2>
           <div className="modal-price">Rs. {product.price.toLocaleString('en-LK')}</div>
-          <p className="modal-desc">{product.fullDesc}</p>
+          <p className="modal-desc">{product.fullDescription || product.fullDesc}</p>
 
           <div className="modal-label">Select Size</div>
           <div className="modal-sizes">
-            {product.sizes.map(size => (
-              <button
-                key={size}
-                id={`size-${size}`}
-                className={`size-btn ${selectedSize === size ? 'selected' : ''}`}
-                onClick={() => setSelectedSize(size)}
-              >
-                {size}
-              </button>
-            ))}
+            {sizeList.map(size => {
+              const stockQty = product.stock ? (product.stock[size] ?? 0) : 99;
+              return (
+                <button
+                  key={size}
+                  id={`size-${size}`}
+                  className={`size-btn ${selectedSize === size ? 'selected' : ''} ${stockQty === 0 ? 'out-of-stock' : ''}`}
+                  onClick={() => stockQty > 0 && setSelectedSize(size)}
+                  title={stockQty === 0 ? 'Out of stock' : undefined}
+                >
+                  {size}
+                </button>
+              );
+            })}
           </div>
 
           <button
@@ -731,6 +791,9 @@ export default function App() {
   const [modalProduct, setModalProduct] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [toast, setToast] = useState({ show: false, message: '' });
+
+  // ── Firestore products ──────────────────────────────────────────
+  const { products, loading: productsLoading, error: productsError } = useProducts();
 
   const showToast = useCallback((msg) => {
     setToast({ show: true, message: msg });
@@ -777,7 +840,13 @@ export default function App() {
       <main>
         <Hero />
         <Marquee />
-        <ShopSection onAddToCart={addToCart} onOpenModal={openModal} />
+        <ShopSection
+          onAddToCart={addToCart}
+          onOpenModal={openModal}
+          products={products}
+          loading={productsLoading}
+          error={productsError}
+        />
         <FeaturedBanner onScrollToShop={() => document.getElementById('shop')?.scrollIntoView({ behavior: 'smooth' })} />
         <Stats />
         <WhyDenver />

@@ -1,7 +1,16 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { ShoppingBag, X, Search, Menu, ChevronDown, Plus, Minus } from 'lucide-react';
+import { ShoppingBag, X, ChevronDown, Plus, Minus, User } from 'lucide-react';
+import { Routes, Route, Navigate, useNavigate, useLocation, Link } from 'react-router-dom';
 import { useProducts } from './hooks/useProducts';
+import { useCart } from './contexts/CartContext';
+import { useAuth } from './contexts/AuthContext';
 import { categories, testimonials } from './data';
+import LoginPage from './pages/LoginPage';
+import SignupPage from './pages/SignupPage';
+import ForgotPasswordPage from './pages/ForgotPasswordPage';
+import CheckoutPage from './pages/CheckoutPage';
+import OrderSuccessPage from './pages/OrderSuccessPage';
+import AccountOrdersPage from './pages/AccountOrdersPage';
 
 // Inline social icons (lucide-react version doesn't include these)
 const InstagramIcon = () => (
@@ -56,6 +65,8 @@ function AnnouncementBar() {
    NAVBAR
    ============================================================ */
 function Navbar({ cartCount, onCartOpen }) {
+  const { currentUser } = useAuth();
+  const navigate = useNavigate();
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -94,6 +105,17 @@ function Navbar({ cartCount, onCartOpen }) {
         </div>
 
         <div className="navbar-actions">
+          {/* Auth / account icon */}
+          <button
+            id="account-btn"
+            className="navbar-icon-btn"
+            onClick={() => navigate(currentUser ? '/account/orders' : '/login')}
+            aria-label={currentUser ? 'My Orders' : 'Sign In'}
+            title={currentUser ? 'My Orders' : 'Sign In'}
+          >
+            <User size={20} />
+          </button>
+
           <button id="cart-btn" className="navbar-icon-btn" onClick={onCartOpen} aria-label="Open cart">
             <ShoppingBag size={20} />
             {cartCount > 0 && <span className="cart-badge">{cartCount}</span>}
@@ -120,6 +142,13 @@ function Navbar({ cartCount, onCartOpen }) {
             {label}
           </a>
         ))}
+        <a
+          className="mobile-nav-link"
+          style={{ cursor: 'pointer' }}
+          onClick={() => { setMenuOpen(false); navigate(currentUser ? '/account/orders' : '/login'); }}
+        >
+          {currentUser ? 'My Orders' : 'Sign In'}
+        </a>
       </div>
     </>
   );
@@ -622,18 +651,24 @@ function Footer() {
 }
 
 /* ============================================================
-   CART SIDEBAR
+   CART SIDEBAR — reads from CartContext, no props needed
    ============================================================ */
-function CartSidebar({ isOpen, onClose, cartItems, onUpdateQty, onRemove }) {
-  const total = cartItems.reduce((sum, item) => sum + item.price * item.qty, 0);
+function CartSidebar() {
+  const { cartItems, cartOpen, closeCart, updateQty, removeItem, cartSubtotal } = useCart();
+  const navigate = useNavigate();
+
+  const handleCheckout = () => {
+    closeCart();
+    navigate('/checkout');
+  };
 
   return (
     <>
-      <div className={`cart-overlay ${isOpen ? 'open' : ''}`} onClick={onClose} />
-      <div className={`cart-sidebar ${isOpen ? 'open' : ''}`} role="dialog" aria-label="Shopping cart">
+      <div className={`cart-overlay ${cartOpen ? 'open' : ''}`} onClick={closeCart} />
+      <div className={`cart-sidebar ${cartOpen ? 'open' : ''}`} role="dialog" aria-label="Shopping cart">
         <div className="cart-header">
           <span className="cart-title">Your Cart ({cartItems.length})</span>
-          <button id="cart-close-btn" className="cart-close" onClick={onClose} aria-label="Close cart">
+          <button id="cart-close-btn" className="cart-close" onClick={closeCart} aria-label="Close cart">
             <X size={20} />
           </button>
         </div>
@@ -643,7 +678,7 @@ function CartSidebar({ isOpen, onClose, cartItems, onUpdateQty, onRemove }) {
             <div className="cart-empty">
               <span className="cart-empty-icon">🛍</span>
               <p className="cart-empty-text">Your cart is empty</p>
-              <button className="btn-primary" style={{ marginTop: '8px', fontSize: '10px', padding: '14px 28px' }} onClick={onClose}>
+              <button className="btn-primary" style={{ marginTop: '8px', fontSize: '10px', padding: '14px 28px' }} onClick={closeCart}>
                 Start Shopping
               </button>
             </div>
@@ -655,16 +690,16 @@ function CartSidebar({ isOpen, onClose, cartItems, onUpdateQty, onRemove }) {
                   <div className="cart-item-name">{item.name}</div>
                   <div className="cart-item-meta">Size: {item.size}</div>
                   <div className="cart-item-qty">
-                    <button className="qty-btn" onClick={() => onUpdateQty(item, -1)}>
+                    <button className="qty-btn" onClick={() => updateQty(item, -1)}>
                       <Minus size={12} />
                     </button>
                     <span className="qty-num">{item.qty}</span>
-                    <button className="qty-btn" onClick={() => onUpdateQty(item, 1)}>
+                    <button className="qty-btn" onClick={() => updateQty(item, 1)}>
                       <Plus size={12} />
                     </button>
                     <button
                       style={{ marginLeft: 'auto', background: 'transparent', color: 'var(--white-muted)', cursor: 'pointer', border: 'none', transition: 'color 0.3s' }}
-                      onClick={() => onRemove(item)}
+                      onClick={() => removeItem(item)}
                       onMouseOver={e => e.currentTarget.style.color = 'var(--white)'}
                       onMouseOut={e => e.currentTarget.style.color = 'var(--white-muted)'}
                     >
@@ -682,12 +717,12 @@ function CartSidebar({ isOpen, onClose, cartItems, onUpdateQty, onRemove }) {
           <div className="cart-footer">
             <div className="cart-subtotal">
               <span className="cart-subtotal-label">Subtotal</span>
-              <span className="cart-subtotal-amount">Rs. {total.toLocaleString('en-LK')}</span>
+              <span className="cart-subtotal-amount">Rs. {cartSubtotal.toLocaleString('en-LK')}</span>
             </div>
-            <button id="checkout-btn" className="cart-checkout-btn">
+            <button id="checkout-btn" className="cart-checkout-btn" onClick={handleCheckout}>
               Proceed to Checkout
             </button>
-            <button className="cart-continue" onClick={onClose}>
+            <button className="cart-continue" onClick={closeCart}>
               Continue Shopping
             </button>
           </div>
@@ -783,59 +818,44 @@ function Toast({ message, show }) {
 }
 
 /* ============================================================
-   APP ROOT
+   PROTECTED ROUTE — redirects unauthenticated users to /login
    ============================================================ */
-export default function App() {
-  const [cartItems, setCartItems] = useState([]);
-  const [cartOpen, setCartOpen] = useState(false);
+function ProtectedRoute({ children }) {
+  const { currentUser, authLoading } = useAuth();
+  const location = useLocation();
+  if (authLoading) return <div className="page-loading">Loading…</div>;
+  if (!currentUser)
+    return <Navigate to={`/login?redirect=${encodeURIComponent(location.pathname)}`} replace />;
+  return children;
+}
+
+/* ============================================================
+   GLOBAL TOAST — reads from CartContext (shown on all pages)
+   ============================================================ */
+function GlobalToast() {
+  const { toast } = useCart();
+  return <Toast message={toast.message} show={toast.show} />;
+}
+
+/* ============================================================
+   HOME PAGE — all existing sections, uses CartContext
+   ============================================================ */
+function HomePage() {
+  const { addToCart, cartCount, openCart } = useCart();
+  const { products, loading: productsLoading, error: productsError } = useProducts();
   const [modalProduct, setModalProduct] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
-  const [toast, setToast] = useState({ show: false, message: '' });
-
-  // ── Firestore products ──────────────────────────────────────────
-  const { products, loading: productsLoading, error: productsError } = useProducts();
-
-  const showToast = useCallback((msg) => {
-    setToast({ show: true, message: msg });
-    setTimeout(() => setToast({ show: false, message: '' }), 2500);
-  }, []);
-
-  const addToCart = useCallback((product, size = 'M') => {
-    setCartItems(prev => {
-      const key = `${product.id}-${size}`;
-      const existing = prev.find(i => `${i.id}-${i.size}` === key);
-      if (existing) {
-        return prev.map(i => i === existing ? { ...i, qty: i.qty + 1 } : i);
-      }
-      return [...prev, { ...product, size, qty: 1 }];
-    });
-    showToast(`${product.name} Added to Cart`);
-  }, [showToast]);
-
-  const updateQty = useCallback((item, delta) => {
-    setCartItems(prev => {
-      const newQty = item.qty + delta;
-      if (newQty <= 0) return prev.filter(i => !(i.id === item.id && i.size === item.size));
-      return prev.map(i => (i.id === item.id && i.size === item.size) ? { ...i, qty: newQty } : i);
-    });
-  }, []);
-
-  const removeItem = useCallback((item) => {
-    setCartItems(prev => prev.filter(i => !(i.id === item.id && i.size === item.size)));
-  }, []);
 
   const openModal = useCallback((product) => {
     setModalProduct(product);
     setModalOpen(true);
   }, []);
 
-  const cartCount = cartItems.reduce((sum, i) => sum + i.qty, 0);
-
   return (
     <>
       <header className="site-header">
         <AnnouncementBar />
-        <Navbar cartCount={cartCount} onCartOpen={() => setCartOpen(true)} />
+        <Navbar cartCount={cartCount} onCartOpen={openCart} />
       </header>
       <main>
         <Hero />
@@ -854,23 +874,44 @@ export default function App() {
         <Newsletter />
       </main>
       <Footer />
-
-      <CartSidebar
-        isOpen={cartOpen}
-        onClose={() => setCartOpen(false)}
-        cartItems={cartItems}
-        onUpdateQty={updateQty}
-        onRemove={removeItem}
-      />
-
       <ProductModal
         product={modalProduct}
         isOpen={modalOpen}
         onClose={() => setModalOpen(false)}
         onAddToCart={addToCart}
       />
+    </>
+  );
+}
 
-      <Toast message={toast.message} show={toast.show} />
+/* ============================================================
+   APP — React Router root
+   CartSidebar and GlobalToast live here so they're available
+   on every route (cart accessible from checkout, orders, etc.)
+   ============================================================ */
+export default function App() {
+  return (
+    <>
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/signup" element={<SignupPage />} />
+        <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+        <Route
+          path="/checkout"
+          element={<ProtectedRoute><CheckoutPage /></ProtectedRoute>}
+        />
+        <Route path="/order-success/:orderNumber" element={<OrderSuccessPage />} />
+        <Route
+          path="/account/orders"
+          element={<ProtectedRoute><AccountOrdersPage /></ProtectedRoute>}
+        />
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+
+      {/* Available on every route */}
+      <CartSidebar />
+      <GlobalToast />
     </>
   );
 }

@@ -180,7 +180,7 @@ export default function CheckoutPage() {
                       className={`form-input ${fieldErrors.name ? 'error' : ''}`}
                       value={name}
                       onChange={e => setName(e.target.value)}
-                      placeholder="Kasun Perera"
+                      placeholder=""
                     />
                     {fieldErrors.name && <span className="form-error">{fieldErrors.name}</span>}
                   </div>
@@ -192,7 +192,7 @@ export default function CheckoutPage() {
                       className={`form-input ${fieldErrors.phone ? 'error' : ''}`}
                       value={phone}
                       onChange={e => setPhone(e.target.value)}
-                      placeholder="0771234567"
+                      placeholder=""
                       type="tel"
                     />
                     {fieldErrors.phone && <span className="form-error">{fieldErrors.phone}</span>}
@@ -205,7 +205,7 @@ export default function CheckoutPage() {
                       className={`form-input ${fieldErrors.city ? 'error' : ''}`}
                       value={city}
                       onChange={e => setCity(e.target.value)}
-                      placeholder="Colombo"
+                      placeholder=""
                     />
                     {fieldErrors.city && <span className="form-error">{fieldErrors.city}</span>}
                   </div>
@@ -217,7 +217,7 @@ export default function CheckoutPage() {
                       className={`form-input ${fieldErrors.address ? 'error' : ''}`}
                       value={address}
                       onChange={e => setAddress(e.target.value)}
-                      placeholder="No. 12, Galle Road"
+                      placeholder=""
                     />
                     {fieldErrors.address && <span className="form-error">{fieldErrors.address}</span>}
                   </div>

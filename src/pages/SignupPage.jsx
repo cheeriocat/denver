@@ -103,7 +103,7 @@ export default function SignupPage() {
               id="signup-name"
               className={`form-input ${errors.name ? 'error' : ''}`}
               type="text"
-              placeholder="Kasun Perera"
+              placeholder=""
               value={name}
               onChange={e => setName(e.target.value)}
               autoComplete="name"
@@ -133,7 +133,7 @@ export default function SignupPage() {
               id="signup-phone"
               className={`form-input ${errors.phone ? 'error' : ''}`}
               type="tel"
-              placeholder="0771234567"
+              placeholder=""
               value={phone}
               onChange={e => setPhone(e.target.value)}
               autoComplete="tel"

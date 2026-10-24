@@ -11,6 +11,12 @@ import ForgotPasswordPage from './pages/ForgotPasswordPage';
 import CheckoutPage from './pages/CheckoutPage';
 import OrderSuccessPage from './pages/OrderSuccessPage';
 import AccountOrdersPage from './pages/AccountOrdersPage';
+// ── Admin ────────────────────────────────────────────────────────────
+import AdminLoginPage       from './admin/AdminLoginPage';
+import AdminLayout          from './admin/AdminLayout';
+import AdminProtectedRoute  from './admin/AdminProtectedRoute';
+import AdminProductsPage    from './admin/products/AdminProductsPage';
+import AdminComingSoon      from './admin/AdminComingSoon';
 
 // Inline social icons (lucide-react version doesn't include these)
 const InstagramIcon = () => (
@@ -893,6 +899,7 @@ export default function App() {
   return (
     <>
       <Routes>
+        {/* ── Storefront routes ───────────────────────────── */}
         <Route path="/" element={<HomePage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/signup" element={<SignupPage />} />
@@ -906,10 +913,28 @@ export default function App() {
           path="/account/orders"
           element={<ProtectedRoute><AccountOrdersPage /></ProtectedRoute>}
         />
+
+        {/* ── Admin routes (own layout, no cart sidebar) ─── */}
+        <Route path="/admin/login" element={<AdminLoginPage />} />
+        <Route
+          path="/admin"
+          element={
+            <AdminProtectedRoute>
+              <AdminLayout />
+            </AdminProtectedRoute>
+          }
+        >
+          <Route index element={<Navigate to="/admin/products" replace />} />
+          <Route path="products" element={<AdminProductsPage />} />
+          <Route path="orders"   element={<AdminComingSoon title="Orders" />} />
+          <Route path="reports"  element={<AdminComingSoon title="Reports" />} />
+          <Route path="settings" element={<AdminComingSoon title="Settings" />} />
+        </Route>
+
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
 
-      {/* Available on every route */}
+      {/* Available on every storefront route (not admin — admin has its own layout) */}
       <CartSidebar />
       <GlobalToast />
     </>

@@ -104,10 +104,15 @@ service cloud.firestore {
     // NOTE: We cannot restrict "increment only" via rules, so we allow any
     //       write by signed-in users. The order creation code is the only place
     //       that touches this doc, and it does so inside a transaction.
-    match /counters/{docId} {
-      allow read: if isSignedIn();
-      allow write: if isSignedIn() || isAdmin();
-    }
+      match /counters/{docId} {
+    allow read: if isSignedIn();
+    allow create: if isAdmin();
+    allow update: if isAdmin()
+      || (isSignedIn()
+          && docId == 'orders'
+          && request.resource.data.keys().hasOnly(['count'])
+          && request.resource.data.count == resource.data.count + 1);
+  }
 
     // ── stats ──────────────────────────────────────────────────────────────
     // Admin-only read/write.

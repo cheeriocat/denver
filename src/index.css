@@ -3,6 +3,9 @@
    Global CSS – Black Theme / Times New Roman
    ============================================ */
 
+/* Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap');
+
 /* ---- Reset & Base ---- */
 *, *::before, *::after {
   margin: 0;
@@ -2602,8 +2605,7 @@ textarea.form-input { resize: vertical; }
   --adm-sidebar-w: 220px;
 }
 
-/* ── Google Inter font (loaded via @import in index.css if not already) ── */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap');
+
 
 /* ============================================
    ADMIN LOGIN PAGE

@@ -1,11 +1,20 @@
 // src/scripts/seedProducts.js
-// Run this ONE TIME from the Admin panel (or manually) to import the 6 mock
-// products into Firestore. Each doc gets `active: true` and a `createdAt` timestamp.
+// Run this ONE TIME from the Admin panel to import the 6 mock products into
+// Firestore. Each product doc gets `active: true` and a `createdAt` timestamp.
+// A matching productCosts/{productId} doc is created with a placeholder costPrice
+// (≈60% of selling price) that you can edit in the Admin products panel later.
 //
-// Usage from Admin UI: import and call seedProducts() once.
-// It is idempotent — it checks if the collection is already seeded.
+// It is idempotent — skips if products already exist.
 
-import { collection, addDoc, getDocs, query, serverTimestamp } from 'firebase/firestore';
+import {
+  collection,
+  addDoc,
+  getDocs,
+  query,
+  doc,
+  setDoc,
+  serverTimestamp,
+} from 'firebase/firestore';
 import { db } from '../lib/firebase';
 
 const MOCK_PRODUCTS = [
@@ -17,8 +26,6 @@ const MOCK_PRODUCTS = [
     originalPrice: null,
     badge: 'New',
     category: 'essentials',
-    // Public t-shirt images from Cloudinary/Unsplash will be used in prod.
-    // For seed we reference the /public files which are deployed with the app.
     images: ['/tshirt_black.jpg'],
     colors: ['#000000', '#ffffff', '#555555'],
     stock: { XS: 20, S: 20, M: 20, L: 20, XL: 20, XXL: 20 },
@@ -92,7 +99,8 @@ const MOCK_PRODUCTS = [
 ];
 
 /**
- * Seeds the Firestore `products` collection with mock data.
+ * Seeds the Firestore `products` collection with mock data and creates
+ * a matching `productCosts/{productId}` doc with a placeholder cost price.
  * Returns { seeded: number, skipped: boolean } or throws on error.
  */
 export async function seedProducts() {
@@ -107,13 +115,23 @@ export async function seedProducts() {
 
   let seeded = 0;
   for (const product of MOCK_PRODUCTS) {
-    await addDoc(colRef, {
+    // Write product doc (cost price is NOT stored here — kept separate)
+    const ref = await addDoc(colRef, {
       ...product,
       createdAt: serverTimestamp(),
     });
+
+    // Write placeholder cost price to productCosts/{productId}
+    // Default: ~60% of selling price, rounded to nearest 10. Edit in Admin panel.
+    const placeholderCost = Math.round(product.price * 0.6 / 10) * 10;
+    await setDoc(doc(db, 'productCosts', ref.id), {
+      costPrice: placeholderCost,
+      updatedAt: serverTimestamp(),
+    });
+
     seeded++;
   }
 
-  console.log(`seedProducts: seeded ${seeded} products.`);
+  console.log(`seedProducts: seeded ${seeded} products with productCosts docs.`);
   return { seeded, skipped: false };
 }

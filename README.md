@@ -1,187 +1,231 @@
-# Denver - Built Beyond Ordinary
+# DENVER - Built Beyond Ordinary
 
-Denver is a modern, high-performance e-commerce web application for a premium Sri Lankan apparel brand. Built with React, Vite, Firebase (Spark plan), and Cloudinary.
+A full e-commerce store for premium t-shirts, built with **React + Vite** and **Firebase**. Customers can browse, sign up, order, and track parcels. The owner manages products, stock, orders, and profit from a protected admin panel, with no code changes needed.
+
+> Live site:https://denver-r4en23v7g-cheeriocat.vercel.app/
+
 
 ---
 
-## 1. Environment Variables
+## Features
 
-Create a `.env` file in the project root based on `.env.example`:
+### Customer side
+- Product catalogue loaded live from Firestore, with category filters
+- Size selection with per-size stock limits
+- Cart that survives page refresh
+- Sign up and login with email/password or Google, plus password reset
+- Checkout with **Cash on Delivery** or **Bank Transfer**
+- Free shipping above a threshold set in the admin settings
+- Unique order numbers (for example `DNV-1004-1PIL`)
+- **My Orders** page with a status timeline and courier details
+- **Public order tracking** at `/track` (order number only, no login, no personal data shown)
+- Policy pages: Privacy, Returns & Exchange, Delivery Info, Contact (with WhatsApp link)
 
-```env
-# Firebase
-VITE_FIREBASE_API_KEY=your_firebase_api_key
-VITE_FIREBASE_AUTH_DOMAIN=your_project_id.firebaseapp.com
-VITE_FIREBASE_PROJECT_ID=your_project_id
-VITE_FIREBASE_STORAGE_BUCKET=your_project_id.firebasestorage.app
-VITE_FIREBASE_MESSAGING_SENDER_ID=your_messaging_sender_id
-VITE_FIREBASE_APP_ID=your_firebase_app_id
+### Admin side (separate login at `/admin/login`)
+- Role-protected panel: only accounts listed in the `admins` collection can enter
+- **Products:** add, edit, hide, delete, image upload (Cloudinary), stock per size, cost price
+- **Orders:** filter, search, status changes (Pending, Confirmed, Packed, Shipped, Delivered, Cancelled), courier name, tracking number and link
+- **Stock:** deducted safely in a transaction when an order is confirmed, restored when a confirmed order is cancelled
+- **Dashboard:** orders today and this month, items sold, revenue, profit, low-stock list
+- **Reports:** sales by product, revenue and profit by date range, CSV export
+- **Settings:** shipping fee, free-shipping threshold, bank details, low-stock level, WhatsApp number
 
-# Cloudinary (Unsigned upload preset)
-VITE_CLOUDINARY_CLOUD_NAME=your_cloudinary_cloud_name
-VITE_CLOUDINARY_UPLOAD_PRESET=your_unsigned_upload_preset_name
+---
+
+## Tech stack
+
+| Area | Technology |
+|---|---|
+| Front end | React, Vite, React Router |
+| Auth | Firebase Authentication |
+| Database | Cloud Firestore |
+| Images | Cloudinary (unsigned upload preset) |
+| Hosting | Vercel (also works on Firebase Hosting or cPanel) |
+
+No custom server is used. Security is enforced by Firestore security rules.
+
+---
+
+## Project structure
+
+```
+.
+├── public/                  # Static files (.htaccess for Apache/cPanel hosting)
+├── src/
+│   ├── admin/               # Admin panel pages and order actions
+│   ├── components/          # Shared UI components
+│   ├── contexts/            # Auth and cart context
+│   ├── hooks/               # useProducts, useSettings, useSEO, ...
+│   ├── lib/firebase.js      # Firebase initialisation
+│   ├── pages/               # Customer pages (checkout, orders, track, policies, ...)
+│   ├── scripts/             # One-time seed script for mock products
+│   ├── App.jsx              # Routes
+│   └── main.jsx
+├── firebase.json
+├── firestore.rules          # Security rules
+├── firestore.indexes.json   # Composite indexes
+├── vercel.json              # SPA rewrite for Vercel
+└── .env.example             # Environment variable template
 ```
 
-> **Note:** Never commit `.env` to version control. All client variables in Vite must start with `VITE_`.
-
 ---
 
-## 2. Firebase Setup (Spark Plan)
+## Getting started (local)
 
-Denver runs on Firebase's free **Spark plan** without requiring Cloud Functions or Firebase Storage.
+### 1. Install
 
-### A. Create Project & Web App
-1. Go to the [Firebase Console](https://console.firebase.google.com/) and create a new project.
-2. Register a new Web App (`</>`) in project settings to obtain your Firebase configuration values.
-3. Paste these values into your `.env` file.
-
-### B. Enable Authentication
-1. Go to **Authentication** > **Sign-in method**.
-2. Enable **Email/Password** provider (Email link is optional; passwordless is not required).
-
-### C. Deploy Firestore Rules
-Deploy the provided security rules to secure user data, orders, and administrative collections:
-- **Option 1 (CLI):** Run `firebase deploy --only firestore:rules`
-- **Option 2 (Console):** Copy the contents of `firestore.rules` and paste into **Firestore Database** > **Rules** tab, then click **Publish**.
-
-### D. Initialize Firestore Collections
-Create these initial documents in Firestore:
-1. **`counters/orders`**:
-   - Collection: `counters`
-   - Document ID: `orders`
-   - Fields: `count` (number) = `0`
-2. **`settings/store`** (optional - the app falls back to defaults if not set):
-   - Collection: `settings`
-   - Document ID: `store`
-   - Fields:
-     - `shippingFee` (number): e.g. `350`
-     - `freeShippingThreshold` (number): e.g. `10000`
-     - `lowStockThreshold` (number): e.g. `5`
-     - `whatsappNumber` (string): e.g. `+94 77 123 4567`
-     - `bankDetails` (map):
-       - `bankName` (string): e.g. `Commercial Bank`
-       - `accountName` (string): e.g. `Denver Clothing (Pvt) Ltd`
-       - `accountNumber` (string): e.g. `1234567890`
-       - `branch` (string): e.g. `Colombo 03`
-
----
-
-## 3. First Admin Document Setup
-
-Denver restricts administrative access using document existence checks in the `admins` collection.
-
-1. Navigate to `/register` on your site and create your store manager account (or create it in Firebase Console > Authentication).
-2. Copy the **User UID** from the Authentication table.
-3. Go to **Firestore Database** > **Data**.
-4. Click **Start collection**:
-   - Collection ID: `admins`
-   - Document ID: `<Paste your user UID here>`
-   - Fields:
-     - `role`: `"admin"` (string)
-     - `createdAt`: `timestamp`
-5. Click **Save**.
-6. Sign in with this account at `/admin/login` to access the admin portal.
-
----
-
-## 4. Cloudinary Setup (Image Uploads)
-
-Denver uses Cloudinary for fast, cost-free image hosting without Firebase Storage fees.
-
-1. Sign up for a free account at [Cloudinary](https://cloudinary.com/).
-2. In your Cloudinary Dashboard, find your **Cloud Name**.
-3. Go to **Settings** (gear icon) > **Upload** > **Upload presets**.
-4. Click **Add upload preset**:
-   - Preset name: e.g. `denver_products`
-   - Signing Mode: **Unsigned** (Required)
-   - Folder: `denver/products` (optional, keeps your media library organized)
-5. Save the preset and add both `VITE_CLOUDINARY_CLOUD_NAME` and `VITE_CLOUDINARY_UPLOAD_PRESET` to your `.env` and deployment environment settings.
-
----
-
-## 5. Firestore Indexes
-
-Denver uses composite queries for order sorting and filtering. Deploy indexes using the Firebase CLI or manually via the console:
-
-### Option 1: Firebase CLI
 ```bash
-firebase deploy --only firestore:indexes
+git clone https://github.com/cheeriocat/denver.git
+cd denver
+npm install
 ```
 
-### Option 2: Manual Console Setup
-In **Firestore Database** > **Indexes** > **Composite Indexes**, create:
-1. Collection: `products`
-   - Fields: `active` (ASC), `createdAt` (ASC)
-2. Collection: `orders`
-   - Fields: `userId` (ASC), `createdAt` (DESC)
-3. Collection: `orders`
-   - Fields: `status` (ASC), `createdAt` (DESC)
-4. Collection: `orders`
-   - Fields: `createdAt` (DESC)
+### 2. Environment variables
+
+Copy `.env.example` to `.env` and fill in the values:
+
+```
+VITE_FIREBASE_API_KEY=
+VITE_FIREBASE_AUTH_DOMAIN=
+VITE_FIREBASE_PROJECT_ID=
+VITE_FIREBASE_STORAGE_BUCKET=
+VITE_FIREBASE_MESSAGING_SENDER_ID=
+VITE_FIREBASE_APP_ID=
+VITE_CLOUDINARY_CLOUD_NAME=
+VITE_CLOUDINARY_UPLOAD_PRESET=
+```
+
+Never commit `.env`. It is already listed in `.gitignore`.
+
+### 3. Run
+
+```bash
+npm run dev
+```
+
+Open http://localhost:5173.
 
 ---
 
-## 6. Deploying to Vercel
+## Firebase setup
 
-1. Push your code to your GitHub / GitLab repository.
-2. Log in to [Vercel](https://vercel.com/) and click **Add New Project**.
-3. Import your Denver repository.
-4. Framework Preset: **Vite**.
-5. Under **Environment Variables**, add each variable from `.env`:
-   - `VITE_FIREBASE_API_KEY`
-   - `VITE_FIREBASE_AUTH_DOMAIN`
-   - `VITE_FIREBASE_PROJECT_ID`
-   - `VITE_FIREBASE_STORAGE_BUCKET`
-   - `VITE_FIREBASE_MESSAGING_SENDER_ID`
-   - `VITE_FIREBASE_APP_ID`
-   - `VITE_CLOUDINARY_CLOUD_NAME`
-   - `VITE_CLOUDINARY_UPLOAD_PRESET`
-6. Click **Deploy**.
+1. Create a project at the [Firebase console](https://console.firebase.google.com) and register a **web app**. Copy the config values into `.env`.
+2. **Authentication:** enable **Email/Password** and **Google**.
+3. **Firestore:** create a database (production mode).
+4. **Rules:** copy the contents of `firestore.rules` into **Firestore, Rules** and click **Publish**.
+5. **Starting counter:** create the collection `counters` with a document `orders` that has a number field `count` set to `1000`. The first order will then be `DNV-1001-...`.
+6. **Indexes:** create these composite indexes (or click the link in the browser console the first time an "index required" error appears):
+   - `orders`: `userId` (ascending), `createdAt` (descending)
+   - `products`: `active` (ascending), `createdAt` (ascending)
+7. **Authorized domains:** in **Authentication, Settings, Authorized domains**, add your Vercel addresses and your own domain (and the `www` version). Login fails on any address not listed.
 
-> **SPA Routing:** Denver includes `vercel.json` with an SPA rewrite rule (`/(.*)` -> `/index.html`). Direct navigation or browser refreshes on routes such as `/admin`, `/track`, or `/delivery-info` will work seamlessly.
->
-> **cPanel / Apache Hosting:** If deploying to cPanel or traditional Apache servers, `public/.htaccess` is included and automatically copied into the `dist/` directory during build.
+### Create the first admin
 
----
+1. Run the site and sign up at `/signup` with your admin email.
+2. In **Firebase, Authentication, Users**, copy your **User UID**.
+3. In **Firestore**, create the collection `admins` with a document whose ID is that UID and a field `role` set to `admin`.
+4. Sign in at `/admin/login`.
+5. Open **Products** and use **Import mock data** to load sample products, then replace them with your own.
 
-## 7. Adding Domains to Firebase Authorized Domains
+### Cloudinary (product images)
 
-When deploying to Vercel or a custom domain, you must authorize the domain in Firebase to allow authentication:
-
-1. Open [Firebase Console](https://console.firebase.google.com/) > **Authentication** > **Settings** tab.
-2. Select **Authorized domains**.
-3. Click **Add domain**.
-4. Add your Vercel domains (e.g. `your-project.vercel.app`) and any custom production domain (e.g. `denver.lk`).
+1. Create a free account and note your **cloud name**.
+2. **Settings, Upload, Upload presets:** add a preset named `denver_products` with **Signing mode: Unsigned**.
+3. Put both values in `.env`.
 
 ---
 
-## 8. Pre-Launch Test Checklist
+## Data model (Firestore)
 
-Complete this checklist before opening the store to customers:
+| Collection | Purpose | Access |
+|---|---|---|
+| `products` | Public product details and stock per size | Public read, admin write |
+| `productCosts` | Cost price per product | Admin only |
+| `orders` | Customer orders | Customer: create and read own. Admin: everything |
+| `orderTracking` | Public status mirror, keyed by order number | Public single-document read, admin write |
+| `users` | Customer profile | Owner only |
+| `admins` | Admin accounts (document ID is the UID) | Owner can read own document |
+| `settings` | Shipping, bank details, WhatsApp, thresholds | Public read, admin write |
+| `counters` | Order number counter | Signed-in users may only increment by 1 |
+| `stats` | Dashboard summary | Admin only |
 
-### Storefront & Shopping Flow
-- [ ] **Home page**: All categories, products, and banners display properly.
-- [ ] **Product Details Modal**: Size selection, stock availability, and image gallery function smoothly.
-- [ ] **Cart**: Adding, updating quantity, removing items, and free-shipping threshold calculation work correctly.
-- [ ] **Account Creation**: Registering a new customer account, logging in, and password reset email work.
-- [ ] **Cash on Delivery Checkout**: Place an order with COD. Confirm redirect lands on Order Success page showing order number.
-- [ ] **Bank Transfer Checkout**: Place an order with Bank Transfer. Verify bank account details display clearly.
-- [ ] **Public Order Tracking**: Visit `/track`, enter the generated order number, and verify the timeline status loads without requiring login.
-- [ ] **Customer Order History**: Check `/account/orders` while logged in to verify the order appears.
+Prices and cost prices are stored on each order at the time of sale, so profit reports stay correct when prices change later.
 
-### Admin Portal (`/admin`)
-- [ ] **Admin Authentication**: Non-admin accounts attempting to visit `/admin` are redirected to `/admin/login`.
-- [ ] **Product Import**: In `/admin/products`, click "Import Mock Products" to seed initial inventory (if starting fresh).
-- [ ] **Product Management**: Create a new product, upload an image via Cloudinary, adjust size stock, set cost price, and toggle visibility.
-- [ ] **Order Status Flow**:
-  - [ ] Advance an order from `Pending` to `Confirmed`. Verify stock is deducted and unit cost is snapshotted.
-  - [ ] Cancel a confirmed order. Verify inventory is restored.
-  - [ ] Add courier name, tracking number, and tracking URL. Check that `/track` updates immediately.
-- [ ] **Store Settings**: In `/admin/settings`, update shipping fee, bank info, and WhatsApp number. Verify `/delivery-info` and `/contact` reflect the changes.
-- [ ] **Reports & Dashboard**: Verify revenue, profit calculation, chart rendering, and CSV order export.
+---
 
-### Informational Pages
-- [ ] Privacy Policy (`/privacy-policy`)
-- [ ] Returns & Exchange (`/returns-exchange`)
-- [ ] Delivery Info (`/delivery-info`)
-- [ ] Contact (`/contact` with dynamic WhatsApp link)
+## Security notes
+
+- Admin access is checked by Firestore rules (existence of `admins/{uid}`), not only by the front end.
+- Customers cannot read other customers' orders, cannot edit order status or tracking, and cannot read cost prices.
+- Order totals are submitted by the browser, so the admin panel **recalculates the total on confirmation** and warns about any mismatch. Do not confirm orders with a mismatched total.
+- Use a strong, unique password and two-step verification on the admin email account.
+- Keep the `admins` collection to trusted accounts only.
+
+---
+
+## Order tracking
+
+Local couriers usually have no API for small shops, so tracking is entered by hand:
+
+1. Hand the parcel to the courier and get a tracking number.
+2. In **Admin, Orders**, set the status to **Shipped** and enter the courier name, tracking number, and tracking link.
+3. Customers see the details in **My Orders** and at `/track`.
+
+---
+
+## Deployment
+
+### Vercel (current setup)
+
+1. Import the GitHub repo into Vercel (the Vite preset is detected automatically).
+2. Add all `VITE_...` variables under **Settings, Environment Variables**.
+3. `vercel.json` rewrites all paths to `index.html`, so refreshing `/admin` or `/track` works.
+4. Add your domain under **Settings, Domains** and set the DNS records at your domain provider.
+5. Add the domain to Firebase **Authorized domains**.
+
+Pushing to a branch creates a preview deployment. Merging into `main` updates production. Preview deployments may be protected by Vercel login; turn this off under **Settings, Deployment Protection** if you want to open them on a phone.
+
+### Firebase Hosting or cPanel
+
+- Firebase Hosting: `npm run build`, then `firebase deploy --only hosting`.
+- cPanel: upload the contents of `dist` and keep `public/.htaccess` (it provides the single-page-app rewrite). Enable SSL.
+
+---
+
+## Scripts
+
+| Command | Description |
+|---|---|
+| `npm run dev` | Start the development server |
+| `npm run dev -- --host` | Dev server reachable from a phone on the same Wi-Fi |
+| `npm run build` | Production build into `dist` |
+| `npm run preview` | Preview the production build locally |
+
+---
+
+## Pre-launch checklist
+
+- [ ] Real products added, with prices, cost prices, photos, and stock
+- [ ] Settings filled in (bank details, shipping fee, WhatsApp number)
+- [ ] Policy pages edited to match how the shop really works
+- [ ] Test orders removed so reports start clean
+- [ ] Full order test: place, confirm, pack, ship, deliver, check `/track`
+- [ ] Customer account cannot open `/admin`
+- [ ] Domain connected and added to Firebase Authorized domains
+- [ ] Strong admin password with two-step verification
+- [ ] Firestore backup exported
+
+---
+
+## Roadmap
+
+- Order emails and WhatsApp messages on confirmation and shipping
+- Card payments with a Sri Lankan gateway (for example PayHere)
+- Editable policy pages from the admin panel
+- Automatic stock handling in Cloud Functions on a paid Firebase plan
+
+---
+
+## Author
+
+Built by **Kaveen** - [@cheeriocat](https://github.com/cheeriocat)

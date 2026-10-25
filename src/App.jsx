@@ -11,6 +11,7 @@ import ForgotPasswordPage from './pages/ForgotPasswordPage';
 import CheckoutPage from './pages/CheckoutPage';
 import OrderSuccessPage from './pages/OrderSuccessPage';
 import AccountOrdersPage from './pages/AccountOrdersPage';
+import TrackOrderPage from './pages/TrackOrderPage';
 // ── Admin ────────────────────────────────────────────────────────────
 import AdminLoginPage       from './admin/AdminLoginPage';
 import AdminLayout          from './admin/AdminLayout';
@@ -111,6 +112,7 @@ function Navbar({ cartCount, onCartOpen }) {
               {label}
             </a>
           ))}
+          <Link to="/track" className="navbar-link">Track Order</Link>
         </div>
 
         <div className="navbar-actions">
@@ -151,6 +153,13 @@ function Navbar({ cartCount, onCartOpen }) {
             {label}
           </a>
         ))}
+        <Link
+          to="/track"
+          className="mobile-nav-link"
+          onClick={() => setMenuOpen(false)}
+        >
+          Track Order
+        </Link>
         <a
           className="mobile-nav-link"
           style={{ cursor: 'pointer' }}
@@ -627,7 +636,11 @@ function Footer() {
             <div className="footer-col-title">Help</div>
             <div className="footer-links">
               {['Size Guide', 'Shipping & Returns', 'FAQ', 'Track Order', 'Contact Us'].map(link => (
-                <span key={link} className="footer-link">{link}</span>
+                link === 'Track Order' ? (
+                  <Link key={link} to="/track" className="footer-link">{link}</Link>
+                ) : (
+                  <span key={link} className="footer-link">{link}</span>
+                )
               ))}
             </div>
           </div>
@@ -912,6 +925,7 @@ export default function App() {
           element={<ProtectedRoute><CheckoutPage /></ProtectedRoute>}
         />
         <Route path="/order-success/:orderNumber" element={<OrderSuccessPage />} />
+        <Route path="/track" element={<TrackOrderPage />} />
         <Route
           path="/account/orders"
           element={<ProtectedRoute><AccountOrdersPage /></ProtectedRoute>}

@@ -3885,6 +3885,289 @@ textarea.form-input { resize: vertical; }
   display: inline-block;
 }
 
+/* ============================================
+   PHASE 4: PUBLIC ORDER TRACKING (/track)
+   ============================================ */
+
+.track-page {
+  min-height: calc(100vh - 64px);
+  background: var(--black-soft);
+  padding: 56px 20px 96px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.track-header {
+  text-align: center;
+  margin-bottom: 36px;
+}
+.track-eyebrow {
+  font-family: var(--font-primary);
+  font-size: 10px;
+  letter-spacing: 0.5em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 8px;
+}
+.track-title {
+  font-family: var(--font-primary);
+  font-size: 34px;
+  font-weight: 400;
+  color: var(--white);
+  letter-spacing: 0.05em;
+  margin-bottom: 12px;
+}
+.track-subtitle {
+  font-family: var(--font-primary);
+  font-size: 13px;
+  color: var(--white-muted);
+  line-height: 1.6;
+  max-width: 540px;
+  margin: 0 auto;
+}
+
+/* ── Search Bar Card ── */
+.track-search-card {
+  display: flex;
+  gap: 12px;
+  background: var(--black-card);
+  border: 1px solid var(--border);
+  padding: 12px;
+  margin-bottom: 32px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+}
+@media (max-width: 580px) {
+  .track-search-card { flex-direction: column; }
+}
+
+.track-input-wrap {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  background: var(--black);
+  border: 1px solid var(--border);
+  padding: 0 16px;
+  gap: 12px;
+  transition: border-color var(--transition);
+}
+.track-input-wrap:focus-within {
+  border-color: var(--gold);
+}
+.track-search-icon {
+  color: var(--white-muted);
+  flex-shrink: 0;
+}
+.track-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  font-family: var(--font-primary);
+  font-size: 13px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--white);
+  padding: 14px 0;
+}
+.track-input::placeholder {
+  color: var(--white-muted);
+  text-transform: none;
+  letter-spacing: normal;
+}
+.track-btn {
+  white-space: nowrap;
+  padding: 14px 28px;
+  font-size: 11px;
+}
+
+/* ── Alerts ── */
+.track-alert {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 20px 24px;
+  margin-bottom: 24px;
+  border: 1px solid;
+  font-family: var(--font-primary);
+  font-size: 13px;
+  line-height: 1.6;
+}
+.track-alert-warning {
+  background: rgba(201, 169, 110, 0.06);
+  border-color: rgba(201, 169, 110, 0.35);
+  color: var(--white-dim);
+}
+.track-alert-error {
+  background: rgba(229, 62, 62, 0.08);
+  border-color: rgba(229, 62, 62, 0.3);
+  color: #fc8181;
+}
+.track-alert-icon {
+  color: var(--gold);
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.track-alert-body { flex: 1; }
+.track-alert-title {
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--gold);
+  margin-bottom: 6px;
+  letter-spacing: 0.03em;
+}
+.track-alert-desc {
+  color: var(--white-dim);
+  margin-bottom: 10px;
+}
+.track-alert-list {
+  padding-left: 18px;
+  font-size: 12px;
+  color: var(--white-muted);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.track-alert-list code {
+  color: var(--gold);
+  background: rgba(0, 0, 0, 0.3);
+  padding: 1px 5px;
+}
+
+/* ── Result Card ── */
+.track-result-card {
+  background: var(--black-card);
+  border: 1px solid var(--border);
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+  transition: border-color var(--transition);
+}
+@media (max-width: 600px) {
+  .track-result-card { padding: 22px 18px; }
+}
+
+.track-result-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 12px;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 20px;
+}
+.track-result-tag {
+  font-family: var(--font-primary);
+  font-size: 10px;
+  letter-spacing: 0.4em;
+  text-transform: uppercase;
+  color: var(--white-muted);
+  margin-bottom: 4px;
+}
+.track-result-number {
+  font-family: var(--font-primary);
+  font-size: 20px;
+  letter-spacing: 0.2em;
+  color: var(--gold);
+  font-weight: 500;
+}
+.track-result-time {
+  font-family: var(--font-primary);
+  font-size: 11px;
+  color: var(--white-muted);
+  margin-top: 6px;
+  letter-spacing: 0.04em;
+}
+
+.track-timeline-wrap {
+  padding: 16px 0;
+  overflow-x: auto;
+}
+
+.track-status-summary {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--border);
+  padding: 14px 18px;
+  font-family: var(--font-primary);
+  font-size: 13px;
+  color: var(--white-dim);
+  line-height: 1.6;
+  letter-spacing: 0.03em;
+}
+
+/* ── Courier Dispatch Box ── */
+.track-courier-box {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: rgba(201, 169, 110, 0.05);
+  border: 1px solid rgba(201, 169, 110, 0.25);
+  padding: 18px 20px;
+  flex-wrap: wrap;
+}
+.track-courier-icon {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(201, 169, 110, 0.1);
+  color: var(--gold);
+  border: 1px solid rgba(201, 169, 110, 0.3);
+  flex-shrink: 0;
+}
+.track-courier-info {
+  flex: 1;
+  min-width: 200px;
+}
+.track-courier-title {
+  font-family: var(--font-primary);
+  font-size: 10px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 4px;
+}
+.track-courier-meta {
+  font-family: var(--font-primary);
+  font-size: 12px;
+  color: var(--white-dim);
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  letter-spacing: 0.04em;
+}
+.track-courier-meta strong {
+  color: var(--white);
+}
+.track-courier-action {
+  flex-shrink: 0;
+}
+
+.track-footer-callout {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: var(--font-primary);
+  font-size: 12px;
+  color: var(--white-muted);
+  border-top: 1px solid var(--border);
+  padding-top: 16px;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.track-support-link {
+  color: var(--gold);
+  text-decoration: underline;
+  letter-spacing: 0.05em;
+}
+.track-support-link:hover {
+  color: var(--gold-light);
+}
+
+
 
 
 

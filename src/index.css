@@ -3497,5 +3497,281 @@ textarea.form-input { resize: vertical; }
   letter-spacing: 0.03em;
 }
 
+/* ============================================
+   PHASE 3B-2: DASHBOARD & SETTINGS
+   ============================================ */
+
+/* ── Date range bar ── */
+.adm-date-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  background: var(--adm-card);
+  border: 1px solid var(--adm-border);
+  padding: 10px 16px;
+  margin-bottom: 24px;
+  font-family: var(--adm-font);
+}
+
+.adm-date-presets {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.adm-preset-btn {
+  font-family: var(--adm-font);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  color: var(--adm-muted);
+  background: transparent;
+  border: 1px solid var(--adm-border);
+  padding: 6px 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+.adm-preset-btn:hover {
+  border-color: var(--adm-border2);
+  color: var(--adm-text);
+}
+.adm-preset-btn.active {
+  background: rgba(201, 169, 110, 0.12);
+  border-color: var(--adm-gold);
+  color: var(--adm-gold);
+  font-weight: 500;
+}
+
+.adm-custom-range {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.adm-date-input-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: var(--adm-muted);
+}
+.adm-date-input {
+  background: var(--adm-bg);
+  border: 1px solid var(--adm-border);
+  color: var(--adm-text);
+  font-family: var(--adm-font);
+  font-size: 11px;
+  padding: 5px 8px;
+  color-scheme: dark;
+  outline: none;
+}
+.adm-date-input:focus {
+  border-color: var(--adm-gold);
+}
+
+.adm-range-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: var(--adm-muted);
+  letter-spacing: 0.03em;
+}
+
+/* ── KPI Stat cards grid ── */
+.adm-stat-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.adm-stat-card {
+  background: var(--adm-card);
+  border: 1px solid var(--adm-border);
+  padding: 20px 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-family: var(--adm-font);
+  transition: border-color 0.2s;
+}
+.adm-stat-card:hover {
+  border-color: var(--adm-border2);
+}
+.adm-stat-card.highlight {
+  border-color: rgba(201, 169, 110, 0.4);
+  background: linear-gradient(180deg, rgba(201, 169, 110, 0.04) 0%, var(--adm-card) 100%);
+}
+
+.adm-stat-card-eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--adm-muted);
+  font-weight: 500;
+}
+.adm-stat-card-value {
+  font-size: 26px;
+  font-weight: 600;
+  color: var(--adm-text);
+  letter-spacing: -0.01em;
+  line-height: 1.1;
+}
+.adm-stat-card-sub {
+  font-size: 11px;
+  color: var(--adm-muted);
+  letter-spacing: 0.02em;
+  line-height: 1.4;
+}
+
+/* ── Dashboard sections & table boxes ── */
+.adm-dashboard-section {
+  background: var(--adm-card);
+  border: 1px solid var(--adm-border);
+  padding: 24px 28px;
+  margin-bottom: 24px;
+}
+@media (max-width: 600px) {
+  .adm-dashboard-section { padding: 18px 16px; }
+}
+
+.adm-section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.adm-section-eyebrow {
+  font-size: 9px;
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  color: var(--adm-gold);
+  margin-bottom: 4px;
+  font-weight: 500;
+}
+.adm-section-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--adm-text);
+  letter-spacing: 0.01em;
+}
+.adm-section-desc {
+  font-size: 12px;
+  color: var(--adm-muted);
+  margin-top: 4px;
+  line-height: 1.5;
+}
+
+.adm-loading-state,
+.adm-empty-box {
+  padding: 32px 20px;
+  text-align: center;
+  font-family: var(--adm-font);
+  font-size: 13px;
+  color: var(--adm-muted);
+  border: 1px dashed var(--adm-border);
+  background: rgba(0, 0, 0, 0.15);
+}
+
+/* ── Low-stock tags ── */
+.adm-tag-danger {
+  color: #fca5a5 !important;
+  background: rgba(239, 68, 68, 0.12) !important;
+  border: 1px solid rgba(239, 68, 68, 0.3) !important;
+}
+.adm-tag-warning {
+  color: #fde047 !important;
+  background: rgba(245, 158, 11, 0.1) !important;
+  border: 1px solid rgba(245, 158, 11, 0.3) !important;
+}
+
+/* ── Spin helper ── */
+@keyframes admSpin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+.adm-spin {
+  animation: admSpin 0.9s linear infinite;
+}
+
+/* ── Store Settings Form Styles ── */
+.adm-settings-form {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  max-width: 860px;
+  font-family: var(--adm-font);
+}
+
+.adm-card-section {
+  background: var(--adm-card);
+  border: 1px solid var(--adm-border);
+  padding: 26px 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+@media (max-width: 600px) {
+  .adm-card-section { padding: 20px 18px; }
+}
+
+.adm-card-section-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  border-bottom: 1px solid var(--adm-border);
+  padding-bottom: 16px;
+}
+.adm-card-section-icon {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(201, 169, 110, 0.1);
+  border: 1px solid rgba(201, 169, 110, 0.25);
+  color: var(--adm-gold);
+  flex-shrink: 0;
+}
+.adm-card-section-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--adm-text);
+  letter-spacing: 0.02em;
+}
+.adm-card-section-desc {
+  font-size: 12px;
+  color: var(--adm-muted);
+  line-height: 1.5;
+  margin-top: 3px;
+}
+
+.adm-form-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px 20px;
+}
+@media (max-width: 650px) {
+  .adm-form-grid-2 { grid-template-columns: 1fr; }
+}
+
+.adm-field-hint {
+  display: block;
+  font-size: 11px;
+  color: var(--adm-muted);
+  margin-top: 5px;
+  letter-spacing: 0.02em;
+  line-height: 1.4;
+}
+
+
 
 

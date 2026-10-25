@@ -5,6 +5,7 @@
 import { Outlet, NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import {
+  LayoutDashboard,
   Package,
   ShoppingCart,
   BarChart2,
@@ -14,10 +15,11 @@ import {
 } from 'lucide-react';
 
 const NAV_ITEMS = [
-  { to: '/admin/products', icon: Package,      label: 'Products'  },
-  { to: '/admin/orders',   icon: ShoppingCart, label: 'Orders'    },
-  { to: '/admin/reports',  icon: BarChart2,    label: 'Reports'   },
-  { to: '/admin/settings', icon: Settings,     label: 'Settings'  },
+  { to: '/admin/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
+  { to: '/admin/products',  icon: Package,         label: 'Products'  },
+  { to: '/admin/orders',    icon: ShoppingCart,    label: 'Orders'    },
+  { to: '/admin/reports',   icon: BarChart2,       label: 'Reports'   },
+  { to: '/admin/settings',  icon: Settings,        label: 'Settings'  },
 ];
 
 export default function AdminLayout() {

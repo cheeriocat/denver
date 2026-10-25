@@ -3772,6 +3772,120 @@ textarea.form-input { resize: vertical; }
   line-height: 1.4;
 }
 
+/* ============================================
+   PHASE 3B-3: REPORTS & CHARTS
+   ============================================ */
+
+.adm-chart-metric-selector {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.adm-chart-tab {
+  font-family: var(--adm-font);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  color: var(--adm-muted);
+  background: transparent;
+  border: 1px solid var(--adm-border);
+  padding: 5px 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+.adm-chart-tab:hover {
+  border-color: var(--adm-border2);
+  color: var(--adm-text);
+}
+.adm-chart-tab.active {
+  background: rgba(201, 169, 110, 0.12);
+  border-color: var(--adm-gold);
+  color: var(--adm-gold);
+  font-weight: 500;
+}
+
+.adm-chart-container {
+  position: relative;
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid var(--adm-border);
+  padding: 20px;
+  margin-top: 10px;
+}
+
+.adm-svg-chart-wrap {
+  width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-bottom: 6px;
+}
+.adm-svg-chart {
+  width: 100%;
+  min-width: 500px;
+  height: 200px;
+  display: block;
+}
+
+.adm-chart-bar {
+  transition: fill 0.2s, opacity 0.2s, height 0.3s ease;
+}
+
+.adm-chart-tooltip {
+  position: absolute;
+  top: 14px;
+  right: 18px;
+  background: var(--adm-card);
+  border: 1px solid var(--adm-gold);
+  padding: 10px 14px;
+  font-family: var(--adm-font);
+  font-size: 11px;
+  pointer-events: none;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+}
+.adm-tooltip-date {
+  font-weight: 600;
+  color: var(--adm-text);
+  border-bottom: 1px solid var(--adm-border);
+  padding-bottom: 4px;
+  margin-bottom: 2px;
+}
+.adm-tooltip-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+.adm-tooltip-row span { color: var(--adm-muted); }
+.adm-tooltip-row strong { color: var(--adm-text); }
+
+.adm-chart-footer-legend {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--adm-border);
+  font-family: var(--adm-font);
+  font-size: 11px;
+}
+.adm-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--adm-muted);
+}
+.adm-legend-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+
 
 
 

@@ -18,8 +18,8 @@ import AdminProtectedRoute  from './admin/AdminProtectedRoute';
 import AdminDashboardPage   from './admin/AdminDashboardPage';
 import AdminProductsPage    from './admin/products/AdminProductsPage';
 import AdminOrdersPage      from './admin/orders/AdminOrdersPage';
+import AdminReportsPage     from './admin/AdminReportsPage';
 import AdminSettingsPage    from './admin/AdminSettingsPage';
-import AdminComingSoon      from './admin/AdminComingSoon';
 
 // Inline social icons (lucide-react version doesn't include these)
 const InstagramIcon = () => (
@@ -931,7 +931,7 @@ export default function App() {
           <Route path="dashboard" element={<AdminDashboardPage />} />
           <Route path="products"  element={<AdminProductsPage />} />
           <Route path="orders"    element={<AdminOrdersPage />} />
-          <Route path="reports"   element={<AdminComingSoon title="Reports" />} />
+          <Route path="reports"   element={<AdminReportsPage />} />
           <Route path="settings"  element={<AdminSettingsPage />} />
         </Route>
 

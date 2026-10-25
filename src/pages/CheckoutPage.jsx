@@ -265,7 +265,7 @@ export default function CheckoutPage() {
                       onChange={() => setPayment('cod')}
                     />
                     <div>
-                      <div className="payment-option-label">💵 Cash on Delivery</div>
+                      <div className="payment-option-label">Cash on Delivery</div>
                       <div className="payment-option-desc">Pay when your order arrives.</div>
                     </div>
                   </label>
@@ -284,7 +284,7 @@ export default function CheckoutPage() {
                       onChange={() => setPayment('bank_transfer')}
                     />
                     <div>
-                      <div className="payment-option-label">🏦 Bank Transfer</div>
+                      <div className="payment-option-label">Bank Transfer</div>
                       <div className="payment-option-desc">Transfer before dispatch. Order confirmed after verification.</div>
                     </div>
                   </label>
@@ -317,7 +317,7 @@ export default function CheckoutPage() {
                   style={{ width: '100%', marginTop: '24px', fontSize: '12px', padding: '18px 20px' }}
                   disabled={submitting}
                 >
-                  {submitting ? 'Placing Order…' : `Place Order — ${fmtRs(total)}`}
+                  {submitting ? 'Placing Order...' : `Place Order - ${fmtRs(total)}`}
                 </button>
               </div>
             </form>

@@ -56,7 +56,7 @@ function fmtRs(n) {
 }
 
 function formatDate(ts) {
-  if (!ts) return '—';
+  if (!ts) return '-';
   const d = ts.toDate ? ts.toDate() : new Date(ts);
   return d.toLocaleDateString('en-LK', {
     day: 'numeric',

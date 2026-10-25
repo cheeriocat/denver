@@ -12,6 +12,10 @@ import CheckoutPage from './pages/CheckoutPage';
 import OrderSuccessPage from './pages/OrderSuccessPage';
 import AccountOrdersPage from './pages/AccountOrdersPage';
 import TrackOrderPage from './pages/TrackOrderPage';
+import PrivacyPolicyPage from './pages/PrivacyPolicyPage';
+import ReturnsExchangePage from './pages/ReturnsExchangePage';
+import DeliveryInfoPage from './pages/DeliveryInfoPage';
+import ContactPage from './pages/ContactPage';
 // ── Admin ────────────────────────────────────────────────────────────
 import AdminLoginPage       from './admin/AdminLoginPage';
 import AdminLayout          from './admin/AdminLayout';
@@ -183,7 +187,7 @@ function Hero() {
   return (
     <section className="hero" id="home">
       <div className="hero-bg">
-        <img src="/hero_banner.jpg" alt="Denver — Built Beyond Ordinary" loading="eager" />
+        <img src="/hero_banner.jpg" alt="Denver - Built Beyond Ordinary" loading="eager" />
         <div className="hero-overlay" />
       </div>
 
@@ -413,7 +417,7 @@ function FeaturedBanner({ onScrollToShop }) {
             </h2>
             <p className="featured-banner-text">
               Drop shoulders. Boxy silhouette. 280gsm heavyweight cotton.
-              The Denver Oversized series is a statement of controlled restraint —
+              The Denver Oversized series is a statement of controlled restraint -
               designed for those who command space without trying.
             </p>
             <button id="featured-shop-btn" className="btn-primary" onClick={onScrollToShop}>
@@ -570,11 +574,11 @@ function Newsletter() {
           <h2 className="section-title">Join The Denver Circle</h2>
           <p className="section-subtitle">
             Early access to new drops, exclusive offers, and behind-the-scenes stories
-            — straight to your inbox.
+            - straight to your inbox.
           </p>
           {submitted ? (
             <p style={{ fontFamily: 'Times New Roman', color: 'var(--gold)', letterSpacing: '0.3em', marginTop: '36px', fontSize: '14px' }}>
-              THANK YOU — YOU'RE IN THE CIRCLE
+              THANK YOU - YOU'RE IN THE CIRCLE
             </p>
           ) : (
             <form className="newsletter-form" onSubmit={handleSubmit}>
@@ -635,23 +639,21 @@ function Footer() {
           <div>
             <div className="footer-col-title">Help</div>
             <div className="footer-links">
-              {['Size Guide', 'Shipping & Returns', 'FAQ', 'Track Order', 'Contact Us'].map(link => (
-                link === 'Track Order' ? (
-                  <Link key={link} to="/track" className="footer-link">{link}</Link>
-                ) : (
-                  <span key={link} className="footer-link">{link}</span>
-                )
-              ))}
+              <Link to="/delivery-info" className="footer-link">Delivery Info</Link>
+              <Link to="/returns-exchange" className="footer-link">Returns & Exchange</Link>
+              <Link to="/track" className="footer-link">Track Order</Link>
+              <Link to="/contact" className="footer-link">Contact Us</Link>
+              <span className="footer-link" onClick={() => scrollTo('shop')}>Size Guide</span>
             </div>
           </div>
 
           <div>
             <div className="footer-col-title">Contact</div>
             <div className="footer-links">
-              <span className="footer-link">hello@denverco.lk</span>
-              <span className="footer-link">+94 77 123 4567</span>
+              <a href="mailto:hello@denverco.lk" className="footer-link">hello@denverco.lk</a>
+              <Link to="/contact" className="footer-link">+94 77 123 4567</Link>
               <span className="footer-link" style={{ marginTop: '8px', lineHeight: '1.6' }}>
-                Mon–Sat<br />9am – 6pm (IST)
+                Mon-Sat<br />9am - 6pm (IST)
               </span>
             </div>
           </div>
@@ -662,9 +664,9 @@ function Footer() {
             © 2026 Denver. All rights reserved.
           </span>
           <div className="footer-legal">
-            <span className="footer-legal-link">Privacy Policy</span>
-            <span className="footer-legal-link">Terms of Service</span>
-            <span className="footer-legal-link">Refund Policy</span>
+            <Link to="/privacy-policy" className="footer-legal-link">Privacy Policy</Link>
+            <Link to="/returns-exchange" className="footer-legal-link">Returns Policy</Link>
+            <Link to="/delivery-info" className="footer-legal-link">Delivery Info</Link>
           </div>
         </div>
       </div>
@@ -698,7 +700,9 @@ function CartSidebar() {
         <div className="cart-items">
           {cartItems.length === 0 ? (
             <div className="cart-empty">
-              <span className="cart-empty-icon">🛍</span>
+              <span className="cart-empty-icon">
+                <ShoppingBag size={28} strokeWidth={1.5} style={{ opacity: 0.4 }} />
+              </span>
               <p className="cart-empty-text">Your cart is empty</p>
               <button className="btn-primary" style={{ marginTop: '8px', fontSize: '10px', padding: '14px 28px' }} onClick={closeCart}>
                 Start Shopping
@@ -820,7 +824,7 @@ function ProductModal({ product, isOpen, onClose, onAddToCart }) {
             className="modal-add-btn"
             onClick={() => { onAddToCart(product, selectedSize); onClose(); }}
           >
-            Add to Cart — Rs. {product.price.toLocaleString('en-LK')}
+            Add to Cart - Rs. {product.price.toLocaleString('en-LK')}
           </button>
         </div>
       </div>
@@ -930,6 +934,10 @@ export default function App() {
           path="/account/orders"
           element={<ProtectedRoute><AccountOrdersPage /></ProtectedRoute>}
         />
+        <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
+        <Route path="/returns-exchange" element={<ReturnsExchangePage />} />
+        <Route path="/delivery-info" element={<DeliveryInfoPage />} />
+        <Route path="/contact" element={<ContactPage />} />
 
         {/* ── Admin routes (own layout, no cart sidebar) ─── */}
         <Route path="/admin/login" element={<AdminLoginPage />} />

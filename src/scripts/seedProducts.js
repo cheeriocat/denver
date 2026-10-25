@@ -109,13 +109,12 @@ export async function seedProducts() {
   // Check if already seeded
   const existing = await getDocs(query(colRef));
   if (!existing.empty) {
-    console.warn('seedProducts: products collection already has docs — skipping.');
     return { seeded: 0, skipped: true };
   }
 
   let seeded = 0;
   for (const product of MOCK_PRODUCTS) {
-    // Write product doc (cost price is NOT stored here — kept separate)
+    // Write product doc (cost price is NOT stored here - kept separate)
     const ref = await addDoc(colRef, {
       ...product,
       createdAt: serverTimestamp(),
@@ -132,6 +131,5 @@ export async function seedProducts() {
     seeded++;
   }
 
-  console.log(`seedProducts: seeded ${seeded} products with productCosts docs.`);
   return { seeded, skipped: false };
 }

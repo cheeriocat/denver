@@ -14,6 +14,7 @@ import {
 import { db } from '../lib/firebase';
 import { useAuth } from '../contexts/AuthContext';
 import StoreNav from '../components/StoreNav';
+import { ShoppingBag } from 'lucide-react';
 
 const STATUS_STEPS = ['pending', 'confirmed', 'packed', 'shipped', 'delivered'];
 
@@ -153,7 +154,9 @@ export default function AccountOrdersPage() {
           {/* Empty */}
           {!loading && !error && orders.length === 0 && (
             <div className="orders-empty">
-              <span className="orders-empty-icon">🛍</span>
+              <span className="orders-empty-icon">
+                <ShoppingBag size={28} strokeWidth={1.5} style={{ opacity: 0.4 }} />
+              </span>
               <p className="orders-empty-text">You haven't placed any orders yet.</p>
               <a href="/" className="btn-primary" style={{ display: 'inline-block', textDecoration: 'none', fontSize: '11px', padding: '14px 32px' }}>
                 Start Shopping
@@ -189,7 +192,7 @@ export default function AccountOrdersPage() {
                             className="order-card-item-img"
                           />
                         )}
-                        <span style={{ flex: 1 }}>{item.name} — {item.size}</span>
+                        <span style={{ flex: 1 }}>{item.name} - {item.size}</span>
                         <span>×{item.qty}</span>
                         <span style={{ color: 'var(--gold)', marginLeft: '12px' }}>
                           {fmtRs(item.unitPrice * item.qty)}
@@ -233,7 +236,7 @@ export default function AccountOrdersPage() {
                         rel="noopener noreferrer"
                         className="btn-track"
                       >
-                        Open Courier Tracking ↗
+                        Open Courier Tracking
                       </a>
                     )}
                     <span style={{
@@ -243,7 +246,7 @@ export default function AccountOrdersPage() {
                       letterSpacing: '0.1em',
                       alignSelf: 'center',
                     }}>
-                      {order.paymentMethod === 'bank_transfer' ? '🏦 Bank Transfer' : '💵 Cash on Delivery'}
+                      {order.paymentMethod === 'bank_transfer' ? 'Bank Transfer' : 'Cash on Delivery'}
                     </span>
                   </div>
 

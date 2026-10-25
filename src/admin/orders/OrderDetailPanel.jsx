@@ -27,11 +27,11 @@ function allowedTransitions(current) {
 }
 
 function fmtRs(n) {
-  return n != null ? `Rs. ${Number(n).toLocaleString('en-LK')}` : '—';
+  return n != null ? `Rs. ${Number(n).toLocaleString('en-LK')}` : '-';
 }
 
 function formatDate(ts) {
-  if (!ts) return '—';
+  if (!ts) return '-';
   const d = ts.toDate ? ts.toDate() : new Date(ts);
   return d.toLocaleString('en-LK', {
     day: 'numeric', month: 'short', year: 'numeric',
@@ -144,12 +144,12 @@ export default function OrderDetailPanel({ order, onClose }) {
           <div className="adm-panel-section">
             <div className="adm-panel-section-title">Customer</div>
             <div className="adm-info-grid">
-              <div className="adm-info-row"><span>Name</span><span>{customer.name || '—'}</span></div>
-              <div className="adm-info-row"><span>Phone</span><span>{customer.phone || '—'}</span></div>
-              <div className="adm-info-row"><span>Email</span><span>{customer.email || '—'}</span></div>
-              <div className="adm-info-row"><span>City</span><span>{customer.city || '—'}</span></div>
+              <div className="adm-info-row"><span>Name</span><span>{customer.name || '-'}</span></div>
+              <div className="adm-info-row"><span>Phone</span><span>{customer.phone || '-'}</span></div>
+              <div className="adm-info-row"><span>Email</span><span>{customer.email || '-'}</span></div>
+              <div className="adm-info-row"><span>City</span><span>{customer.city || '-'}</span></div>
               <div className="adm-info-row" style={{ gridColumn: '1/-1' }}>
-                <span>Address</span><span>{customer.address || '—'}</span>
+                <span>Address</span><span>{customer.address || '-'}</span>
               </div>
               {customer.notes && (
                 <div className="adm-info-row" style={{ gridColumn: '1/-1' }}>
@@ -189,7 +189,7 @@ export default function OrderDetailPanel({ order, onClose }) {
                     <td style={{ textAlign: 'right' }}>{item.qty}</td>
                     <td style={{ textAlign: 'right' }}>{fmtRs(item.unitPrice)}</td>
                     <td style={{ textAlign: 'right', color: item.unitCost ? 'var(--adm-muted)' : 'var(--adm-border2)' }}>
-                      {item.unitCost != null ? fmtRs(item.unitCost) : '—'}
+                      {item.unitCost != null ? fmtRs(item.unitCost) : '-'}
                     </td>
                     <td style={{ textAlign: 'right', color: 'var(--adm-gold)' }}>
                       {fmtRs(item.unitPrice * item.qty)}
@@ -216,7 +216,7 @@ export default function OrderDetailPanel({ order, onClose }) {
               <div className="adm-info-row">
                 <span>Payment</span>
                 <span>
-                  {order.paymentMethod === 'bank_transfer' ? '🏦 Bank Transfer' : '💵 Cash on Delivery'}
+                  {order.paymentMethod === 'bank_transfer' ? 'Bank Transfer' : 'Cash on Delivery'}
                   {' '}<span className={`adm-pay-status ${order.paymentStatus}`}>
                     {order.paymentStatus || 'unpaid'}
                   </span>
@@ -293,7 +293,7 @@ export default function OrderDetailPanel({ order, onClose }) {
                   style={{ maxWidth: '200px' }}
                   id="od-status-select"
                 >
-                  <option value="">— Choose new status —</option>
+                  <option value="">- Choose new status -</option>
                   {allowed.map(s => (
                     <option key={s} value={s}>{STATUS_LABELS[s]}</option>
                   ))}
@@ -301,12 +301,12 @@ export default function OrderDetailPanel({ order, onClose }) {
 
                 {newStatus === 'confirmed' && order.status === 'pending' && (
                   <span style={{ fontFamily: 'var(--adm-font)', fontSize: '11px', color: 'var(--adm-gold)', letterSpacing: '0.05em' }}>
-                    ⚡ Will deduct stock &amp; snapshot costs
+                    Will deduct stock &amp; snapshot costs
                   </span>
                 )}
                 {newStatus === 'cancelled' && ['confirmed', 'packed', 'shipped'].includes(order.status) && (
                   <span style={{ fontFamily: 'var(--adm-font)', fontSize: '11px', color: '#fc8181', letterSpacing: '0.05em' }}>
-                    ⚠ Will restore stock
+                    Will restore stock
                   </span>
                 )}
 

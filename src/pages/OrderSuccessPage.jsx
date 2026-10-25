@@ -63,7 +63,7 @@ export default function OrderSuccessPage() {
           letterSpacing: '0.05em',
         }}>
           Payment: Cash on Delivery
-          {total != null && <> — <strong style={{ color: 'var(--white)' }}>{fmtRs(total)}</strong> due on arrival</>}
+          {total != null && <> - <strong style={{ color: 'var(--white)' }}>{fmtRs(total)}</strong> due on arrival</>}
         </p>
       )}
 

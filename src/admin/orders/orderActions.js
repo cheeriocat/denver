@@ -70,7 +70,7 @@ export async function confirmOrder(order) {
       const currentStock = product?.stock?.[item.size] ?? 0;
       if (currentStock < item.qty) {
         throw new Error(
-          `Insufficient stock: ${item.name} (${item.size}) — available: ${currentStock}, needed: ${item.qty}`
+          `Insufficient stock: ${item.name} (${item.size}) - available: ${currentStock}, needed: ${item.qty}`
         );
       }
     }

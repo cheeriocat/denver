@@ -38,11 +38,11 @@ const STATUS_CSS = {
 
 /* ── Helpers ─────────────────────────────────────────────────────────── */
 function fmtRs(n) {
-  return n != null ? `Rs. ${Number(n).toLocaleString('en-LK')}` : '—';
+  return n != null ? `Rs. ${Number(n).toLocaleString('en-LK')}` : '-';
 }
 
 function formatDate(ts) {
-  if (!ts) return '—';
+  if (!ts) return '-';
   const d = ts.toDate ? ts.toDate() : new Date(ts);
   return d.toLocaleDateString('en-LK', {
     day: 'numeric', month: 'short', year: 'numeric',
@@ -206,7 +206,7 @@ export default function AdminOrdersPage() {
             aria-label="From date"
             title="From date"
           />
-          <span style={{ color: 'var(--adm-muted)', fontSize: 12 }}>–</span>
+          <span style={{ color: 'var(--adm-muted)', fontSize: 12 }}>-</span>
           <input
             type="date"
             className="form-input adm-date-input"
@@ -272,7 +272,7 @@ export default function AdminOrdersPage() {
                     {formatDate(order.createdAt)}
                   </td>
                   <td>
-                    <div className="adm-product-name">{order.customer?.name || '—'}</div>
+                    <div className="adm-product-name">{order.customer?.name || '-'}</div>
                     <div className="adm-product-desc">{order.customer?.phone || ''}</div>
                   </td>
                   <td style={{ color: 'var(--adm-muted)', fontSize: 12 }}>
@@ -280,7 +280,7 @@ export default function AdminOrdersPage() {
                   </td>
                   <td>
                     <span className="adm-pay-method">
-                      {order.paymentMethod === 'bank_transfer' ? '🏦 Bank' : '💵 COD'}
+                      {order.paymentMethod === 'bank_transfer' ? 'Bank' : 'COD'}
                     </span>
                   </td>
                   <td style={{ textAlign: 'right', color: 'var(--adm-gold)', fontWeight: 500 }}>

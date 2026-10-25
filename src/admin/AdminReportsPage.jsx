@@ -35,7 +35,7 @@ function fmtRs(n) {
 }
 
 function formatDate(ts) {
-  if (!ts) return '—';
+  if (!ts) return '-';
   const d = ts.toDate ? ts.toDate() : new Date(ts);
   return d.toLocaleDateString('en-LK', {
     day: 'numeric',
@@ -341,7 +341,7 @@ export default function AdminReportsPage() {
         order.subtotal ?? 0,
         order.shipping ?? 0,
         order.total ?? 0,
-        isDelivered ? Math.round(profit) : '—',
+        isDelivered ? Math.round(profit) : '-',
         itemsStr,
       ];
 
@@ -725,7 +725,7 @@ export default function AdminReportsPage() {
                       {p.deliveredUnits} / {p.unitsSold}
                     </td>
                     <td style={{ textAlign: 'right', fontWeight: 600, color: '#86efac' }}>
-                      {p.deliveredUnits > 0 ? fmtRs(p.deliveredProfit) : '—'}
+                      {p.deliveredUnits > 0 ? fmtRs(p.deliveredProfit) : '-'}
                     </td>
                   </tr>
                 ))}

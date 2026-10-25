@@ -234,7 +234,7 @@ export default function ProductForm({ product, onClose, onSaved }) {
                 <label className="form-label" htmlFor="pf-badge">Badge</label>
                 <select id="pf-badge" className="form-input adm-select" value={form.badge}
                   onChange={e => set('badge', e.target.value)}>
-                  {BADGE_OPTIONS.map(b => <option key={b} value={b}>{b || '— None —'}</option>)}
+                  {BADGE_OPTIONS.map(b => <option key={b} value={b}>{b || '- None -'}</option>)}
                 </select>
               </div>
             </div>
@@ -282,7 +282,7 @@ export default function ProductForm({ product, onClose, onSaved }) {
                 </div>
               ))}
               {form.sizes.length === 0 && (
-                <p className="adm-empty-hint">No sizes yet — add standard or custom sizes above.</p>
+                <p className="adm-empty-hint">No sizes yet - add standard or custom sizes above.</p>
               )}
             </div>
           </div>

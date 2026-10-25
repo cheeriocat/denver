@@ -7,7 +7,7 @@ export const categories = ["all", "essentials", "oversized", "signature"];
 export const testimonials = [
   {
     id: 1,
-    text: "I have tried every premium tee available in Sri Lanka. Denver is in a class of its own. The weight, the drape, the fit — nothing else comes close.",
+    text: "I have tried every premium tee available in Sri Lanka. Denver is in a class of its own. The weight, the drape, the fit - nothing else comes close.",
     author: "Ashan P.",
     location: "Colombo",
     initial: "A",

@@ -19,7 +19,7 @@ import { Plus, Edit2, Trash2, Eye, EyeOff, Download, Search } from 'lucide-react
 import ProductForm from './ProductForm';
 
 function fmtRs(n) {
-  return n != null ? `Rs. ${Number(n).toLocaleString('en-LK')}` : '—';
+  return n != null ? `Rs. ${Number(n).toLocaleString('en-LK')}` : '-';
 }
 
 function totalStock(stockMap) {
@@ -86,7 +86,7 @@ export default function AdminProductsPage() {
     try {
       const result = await seedProducts();
       if (result.skipped) {
-        setSeedMsg('Products already exist in Firestore — nothing was imported.');
+        setSeedMsg('Products already exist in Firestore - nothing was imported.');
       } else {
         setSeedMsg(`✓ Imported ${result.seeded} products successfully.`);
       }
@@ -178,7 +178,7 @@ export default function AdminProductsPage() {
                   <td>
                     {p.images?.[0]
                       ? <img src={p.images[0]} alt={p.name} className="adm-product-thumb" />
-                      : <div className="adm-product-thumb adm-no-img">—</div>
+                      : <div className="adm-product-thumb adm-no-img">-</div>
                     }
                   </td>
                   <td>

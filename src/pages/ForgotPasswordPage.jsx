@@ -43,7 +43,7 @@ export default function ForgotPasswordPage() {
 
         {sent ? (
           <div className="auth-success">
-            Check your inbox — a reset link has been sent to <strong>{email}</strong>.
+            Check your inbox - a reset link has been sent to <strong>{email}</strong>.
             <br />
             <br />
             If you don't see it, check your spam folder.

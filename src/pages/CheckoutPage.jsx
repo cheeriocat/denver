@@ -2,7 +2,7 @@
 // Checkout form → Firestore order creation via transaction.
 // Reads cart from CartContext, settings from Firestore, user profile from AuthContext.
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   runTransaction,
@@ -28,6 +28,7 @@ export default function CheckoutPage() {
   const { cartItems, cartSubtotal, clearCart } = useCart();
   const { currentUser, userProfile, updateUserProfile } = useAuth();
   const { settings, settingsLoading } = useSettings();
+  const orderPlacedRef = useRef(false);
 
   // ── Form state ────────────────────────────────────────────────────────────
   const [name, setName]             = useState('');
@@ -50,8 +51,9 @@ export default function CheckoutPage() {
     }
   }, [userProfile]);
 
-  // Redirect if cart is empty
+  // Redirect if cart is empty (skip if order was just placed)
   useEffect(() => {
+    if (orderPlacedRef.current) return;
     if (!settingsLoading && cartItems.length === 0) navigate('/', { replace: true });
   }, [cartItems, settingsLoading, navigate]);
 
@@ -129,8 +131,10 @@ export default function CheckoutPage() {
       updateUserProfile({ name: name.trim(), phone: phone.trim(), address: address.trim(), city: city.trim() })
         .catch(console.warn);
 
-      clearCart();
+      // Flag that order was placed so empty-cart effect doesn't redirect to home
+      orderPlacedRef.current = true;
 
+      // Navigate to success page first
       navigate(`/order-success/${finalOrderNumber}`, {
         replace: true,
         state: {
@@ -140,6 +144,9 @@ export default function CheckoutPage() {
           settings,
         },
       });
+
+      // Clear cart safely after navigating
+      clearCart();
     } catch (err) {
       console.error('Order creation error:', err);
       setSubmitErr('Failed to place order. Please check your connection and try again.');

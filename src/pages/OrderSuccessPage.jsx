@@ -4,14 +4,17 @@
 // come from router state (navigate(..., { state: {...} })).
 
 import { useParams, useLocation, Link } from 'react-router-dom';
+import { useSettings } from '../hooks/useSettings';
 
 export default function OrderSuccessPage() {
   const { orderNumber } = useParams();
   const { state } = useLocation();
+  const { settings: storeSettings } = useSettings();
 
-  const total         = state?.total;
-  const paymentMethod = state?.paymentMethod;
-  const settings      = state?.settings;
+  const finalOrderNumber = orderNumber || state?.orderNumber || '';
+  const total            = state?.total;
+  const paymentMethod    = state?.paymentMethod;
+  const settings         = state?.settings || storeSettings;
 
   const fmtRs = (n) => (n != null ? `Rs. ${Number(n).toLocaleString('en-LK')}` : '');
 
@@ -22,7 +25,7 @@ export default function OrderSuccessPage() {
 
       {/* Title */}
       <h1 className="order-success-title">Order Placed!</h1>
-      <div className="order-success-number">{orderNumber}</div>
+      <div className="order-success-number">{finalOrderNumber}</div>
 
       <p className="order-success-msg">
         Thank you for shopping with Denver. We've received your order and will
@@ -45,7 +48,7 @@ export default function OrderSuccessPage() {
             </div>
           )}
           <div style={{ marginTop: '12px', fontSize: '11px', color: 'var(--white-muted)', letterSpacing: '0.05em' }}>
-            Use your order number <strong style={{ color: 'var(--white)' }}>{orderNumber}</strong> as the
+            Use your order number <strong style={{ color: 'var(--white)' }}>{finalOrderNumber}</strong> as the
             transfer reference. Your order will be dispatched after payment is verified.
           </div>
         </div>

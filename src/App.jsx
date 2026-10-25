@@ -16,6 +16,7 @@ import AdminLoginPage       from './admin/AdminLoginPage';
 import AdminLayout          from './admin/AdminLayout';
 import AdminProtectedRoute  from './admin/AdminProtectedRoute';
 import AdminProductsPage    from './admin/products/AdminProductsPage';
+import AdminOrdersPage      from './admin/orders/AdminOrdersPage';
 import AdminComingSoon      from './admin/AdminComingSoon';
 
 // Inline social icons (lucide-react version doesn't include these)
@@ -926,7 +927,7 @@ export default function App() {
         >
           <Route index element={<Navigate to="/admin/products" replace />} />
           <Route path="products" element={<AdminProductsPage />} />
-          <Route path="orders"   element={<AdminComingSoon title="Orders" />} />
+          <Route path="orders"   element={<AdminOrdersPage />} />
           <Route path="reports"  element={<AdminComingSoon title="Reports" />} />
           <Route path="settings" element={<AdminComingSoon title="Settings" />} />
         </Route>
